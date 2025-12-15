@@ -1,0 +1,17 @@
+{
+  "hero": {
+    "title_en": "Nutty Scientists",
+    "title_ar": "ناتي ساينتستس",
+    "subtitle_en": "Where Science Meets Fun!",
+    "subtitle_ar": "حيث يلتقي العلم بالمرح!",
+    "description_en": "Transforming young minds through innovative science education and interactive experiments.",
+    "description_ar": "نحول عقول الشباب من خلال التعليم العلمي المبتكر والتجارب التفاعلية."
+  },
+  "footer": {
+    "rights_en": "All rights reserved",
+    "rights_ar": "جميع الحقوق محفوظة",
+    "contact_en": "Contact Information",
+    "contact_ar": "معلومات الاتصال"
+  },
+  "sections": {}
+}

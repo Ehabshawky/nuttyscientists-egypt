@@ -1,0 +1,228 @@
+"use client";
+import React from "react";
+import { motion } from "framer-motion";
+import { useTranslation } from "react-i18next";
+import {
+  Users,
+  Target,
+  Eye,
+  Award,
+  Clock,
+  Globe,
+  Shield,
+  Heart,
+} from "lucide-react";
+
+const About = () => {
+  const { t } = useTranslation();
+
+  const values = [
+    {
+      icon: Heart,
+      title: t("about.value1Title"),
+      description: t("about.value1Desc"),
+    },
+    {
+      icon: Users,
+      title: t("about.value2Title"),
+      description: t("about.value2Desc"),
+    },
+    {
+      icon: Shield,
+      title: t("about.value3Title"),
+      description: t("about.value3Desc"),
+    },
+    {
+      icon: Globe,
+      title: t("about.value4Title"),
+      description: t("about.value4Desc"),
+    },
+    {
+      icon: Clock,
+      title: t("about.value5Title"),
+      description: t("about.value5Desc"),
+    },
+    {
+      icon: Award,
+      title: t("about.value6Title"),
+      description: t("about.value6Desc"),
+    },
+  ];
+
+  const milestones = [
+    { year: "2010", event: t("about.milestones.2010") },
+    { year: "2012", event: t("about.milestones.2012") },
+    { year: "2015", event: t("about.milestones.2015") },
+    { year: "2018", event: t("about.milestones.2018") },
+    { year: "2020", event: t("about.milestones.2020") },
+    { year: "2023", event: t("about.milestones.2023") },
+    { year: "2025", event: t("about.milestones.2025") },
+  ];
+
+  return (
+    <section id="about" className="py-20 bg-white dark:bg-gray-900">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Header */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="text-center mb-16"
+        >
+          <h2 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-4">
+            {t("aboutTitle")}
+          </h2>
+          <p className="text-xl text-gray-600 dark:text-gray-400 max-w-3xl mx-auto">
+            {t("about.lead")}
+          </p>
+        </motion.div>
+
+        <div className="grid lg:grid-cols-2 gap-12 mb-20">
+          {/* Mission */}
+          <motion.div
+            initial={{ opacity: 0, x: -20 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            className="bg-gradient-to-br from-blue-50 to-purple-50 dark:from-gray-800 dark:to-gray-800 rounded-2xl p-8"
+          >
+            <div className="flex items-center mb-6">
+              <Target className="w-12 h-12 text-nutty-blue mr-4" />
+              <h3 className="text-2xl font-bold text-gray-900 dark:text-white">
+                {t("mission")}
+              </h3>
+            </div>
+            <p className="text-lg text-gray-700 dark:text-gray-300 leading-relaxed">
+              {t("missionText")}
+            </p>
+          </motion.div>
+
+          {/* Vision */}
+          <motion.div
+            initial={{ opacity: 0, x: 20 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            className="bg-gradient-to-br from-yellow-50 to-orange-50 dark:from-gray-800 dark:to-gray-800 rounded-2xl p-8"
+          >
+            <div className="flex items-center mb-6">
+              <Eye className="w-12 h-12 text-nutty-yellow mr-4" />
+              <h3 className="text-2xl font-bold text-gray-900 dark:text-white">
+                {t("vision")}
+              </h3>
+            </div>
+            <p className="text-lg text-gray-700 dark:text-gray-300 leading-relaxed">
+              {t("visionText")}
+            </p>
+          </motion.div>
+        </div>
+
+        {/* Our Values */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="mb-20"
+        >
+          <h3 className="text-3xl font-bold text-center text-gray-900 dark:text-white mb-12">
+            {t("about.coreValues")}
+          </h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {values.map((value, index) => (
+              <motion.div
+                key={index}
+                whileHover={{ scale: 1.05 }}
+                className="bg-gray-50 dark:bg-gray-800 rounded-xl p-6 text-center hover:shadow-xl transition-all"
+              >
+                <div className="w-16 h-16 mx-auto mb-4 bg-nutty-blue/10 rounded-full flex items-center justify-center">
+                  <value.icon className="w-8 h-8 text-nutty-blue" />
+                </div>
+                <h4 className="text-xl font-bold text-gray-900 dark:text-white mb-3">
+                  {value.title}
+                </h4>
+                <p className="text-gray-600 dark:text-gray-400">
+                  {value.description}
+                </p>
+              </motion.div>
+            ))}
+          </div>
+        </motion.div>
+
+        {/* Timeline */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true }}
+          className="mb-20"
+        >
+          <h3 className="text-3xl font-bold text-center text-gray-900 dark:text-white mb-12">
+            {t("about.journey")}
+          </h3>
+          <div className="relative">
+            {/* Timeline line */}
+            <div className="absolute left-1/2 transform -translate-x-1/2 h-full w-1 bg-gradient-to-b from-nutty-blue to-nutty-yellow"></div>
+
+            {milestones.map((milestone, index) => (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: index * 0.1 }}
+                className={`relative flex items-center mb-12 ${
+                  index % 2 === 0 ? "flex-row" : "flex-row-reverse"
+                }`}
+              >
+                {/* Content */}
+                <div
+                  className={`w-5/12 ${
+                    index % 2 === 0 ? "text-right pr-8" : "text-left pl-8"
+                  }`}
+                >
+                  <div className="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-lg">
+                    <div className="text-2xl font-bold text-nutty-blue dark:text-nutty-yellow mb-2">
+                      {milestone.year}
+                    </div>
+                    <p className="text-gray-700 dark:text-gray-300">
+                      {milestone.event}
+                    </p>
+                  </div>
+                </div>
+
+                {/* Dot */}
+                <div className="absolute left-1/2 transform -translate-x-1/2 w-6 h-6 bg-white border-4 border-nutty-blue rounded-full"></div>
+
+                {/* Empty space for alignment */}
+                <div className="w-5/12"></div>
+              </motion.div>
+            ))}
+          </div>
+        </motion.div>
+
+        {/* Team Stats */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="bg-gradient-to-r from-nutty-blue to-purple-600 rounded-2xl p-8 md:p-12"
+        >
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+            {[
+              { value: "50+", label: t("about.stats.expertScientists") },
+              { value: "15", label: t("about.stats.phdHolders") },
+              { value: "100%", label: t("about.stats.certifiedEducators") },
+              { value: "10+", label: t("about.stats.languagesSpoken") },
+            ].map((stat, index) => (
+              <div key={index} className="text-center">
+                <div className="text-4xl font-bold text-white mb-2">
+                  {stat.value}
+                </div>
+                <div className="text-lg text-blue-100">{stat.label}</div>
+              </div>
+            ))}
+          </div>
+        </motion.div>
+      </div>
+    </section>
+  );
+};
+
+export default About;

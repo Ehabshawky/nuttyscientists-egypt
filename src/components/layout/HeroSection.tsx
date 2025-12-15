@@ -1,0 +1,272 @@
+"use client";
+import React, { useState, useEffect } from "react";
+import { motion } from "framer-motion";
+import { useTranslation } from "react-i18next";
+import {
+  Beaker,
+  FlaskConical,
+  Atom,
+  Rocket,
+  ChevronLeft,
+  ChevronRight,
+} from "lucide-react";
+
+const HeroSection = () => {
+  const { t, i18n } = useTranslation();
+  const [currentSlide, setCurrentSlide] = useState(0);
+  const isRTL = i18n.language === "ar";
+
+  const icons = [
+    { Icon: Beaker, color: "text-yellow-500" },
+    { Icon: FlaskConical, color: "text-blue-500" },
+    { Icon: Atom, color: "text-green-500" },
+    { Icon: Rocket, color: "text-purple-500" },
+  ];
+
+  const heroSlides = [
+    {
+      id: 1,
+      image: "/hero1.jpg",
+      title: isRTL ? "التعلم العملي" : "Hands-On Learning",
+      description: isRTL
+        ? "ورش عمل علمية تفاعلية للعقول الصغيرة"
+        : "Interactive science workshops for young minds",
+    },
+    {
+      id: 2,
+      image: "/hero2.webp",
+      title: isRTL ? "تجارب حقيقية" : "Real Experiments",
+      description: isRTL
+        ? "عروض كيمياء آمنة وممتعة"
+        : "Safe and fun chemistry demonstrations",
+    },
+    {
+      id: 3,
+      image: "/hero3.jpg",
+      title: isRTL ? "تعليم STEM" : "STEM Education",
+      description: isRTL
+        ? "تعلم الروبوتات والبرمجة"
+        : "Learning robotics and programming",
+    },
+  ];
+
+  const statsData = [
+    {
+      value: isRTL ? "١٠ آلاف+" : "10K+",
+      label: t("studentsTrained"),
+    },
+    {
+      value: isRTL ? "٥٠٠+" : "500+",
+      label: t("workshops"),
+    },
+    {
+      value: isRTL ? "٥٠+" : "50+",
+      label: t("schools"),
+    },
+    {
+      value: isRTL ? "١٠٠٪" : "100%",
+      label: t("satisfaction"),
+    },
+  ];
+
+  // Auto slide change
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentSlide((prev) => (prev + 1) % heroSlides.length);
+    }, 5000);
+    return () => clearInterval(interval);
+  }, [heroSlides.length]);
+
+  // Load editable hero content from API (if present)
+  const [editableHero, setEditableHero] = useState<any>(null);
+  useEffect(() => {
+    let mounted = true;
+    async function load() {
+      try {
+        const res = await fetch("/api/site-content");
+        if (!res.ok) return;
+        const data = await res.json();
+        if (!mounted) return;
+        if (data?.hero) setEditableHero(data.hero);
+      } catch (e) {
+        // ignore
+      }
+    }
+    load();
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
+  const nextSlide = () => {
+    setCurrentSlide((prev) => (prev + 1) % heroSlides.length);
+  };
+
+  const prevSlide = () => {
+    setCurrentSlide(
+      (prev) => (prev - 1 + heroSlides.length) % heroSlides.length
+    );
+  };
+
+  return (
+    <section id="home" className="relative pt-20 overflow-hidden">
+      {/* Manual Slider */}
+      <div className="absolute inset-0 z-0">
+        {heroSlides.map((slide, index) => (
+          <div
+            key={slide.id}
+            className={`absolute inset-0 transition-opacity duration-1000 ${
+              index === currentSlide
+                ? "opacity-100"
+                : "opacity-0 pointer-events-none"
+            }`}
+          >
+            <div
+              className="absolute inset-0 bg-cover bg-center"
+              style={{ backgroundImage: `url(${slide.image})` }}
+            />
+            <div className="absolute inset-0 bg-black/50" />
+          </div>
+        ))}
+      </div>
+
+      {/* Navigation Buttons */}
+      <button
+        onClick={prevSlide}
+        className="absolute left-4 top-1/2 transform -translate-y-1/2 z-20 bg-white/20 hover:bg-white/40 backdrop-blur-sm rounded-full p-3 transition-all duration-300"
+      >
+        <ChevronLeft className="h-6 w-6 text-white" />
+      </button>
+
+      <button
+        onClick={nextSlide}
+        className="absolute right-4 top-1/2 transform -translate-y-1/2 z-20 bg-white/20 hover:bg-white/40 backdrop-blur-sm rounded-full p-3 transition-all duration-300"
+      >
+        <ChevronRight className="h-6 w-6 text-white" />
+      </button>
+
+      {/* Main Content */}
+      <div className="relative z-10">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 md:py-32">
+          <div className="text-center">
+            {/* Animated Icons */}
+            <div className="flex justify-center gap-6 mb-8 flex-wrap">
+              {icons.map(({ Icon, color }, index) => (
+                <motion.div
+                  key={index}
+                  initial={{ y: 0 }}
+                  animate={{ y: [0, -15, 0] }}
+                  transition={{
+                    duration: 2.5,
+                    delay: index * 0.2,
+                    repeat: Infinity,
+                    ease: "easeInOut",
+                  }}
+                  className="bg-white/10 backdrop-blur-sm rounded-full p-4"
+                >
+                  <Icon className={`h-8 w-8 ${color}`} />
+                </motion.div>
+              ))}
+            </div>
+
+            {/* Main Title */}
+            <motion.h1
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8 }}
+              className="text-5xl md:text-7xl font-bold text-white mb-6"
+            >
+              {editableHero
+                ? (isRTL ? editableHero.title_ar : editableHero.title_en) ||
+                  t("heroTitle")
+                : t("heroTitle")}
+            </motion.h1>
+
+            {/* Subtitle */}
+            <motion.h2
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.2 }}
+              className="text-2xl md:text-3xl text-yellow-400 mb-8"
+            >
+              {editableHero
+                ? (isRTL
+                    ? editableHero.subtitle_ar
+                    : editableHero.subtitle_en) || t("heroSubtitle")
+                : t("heroSubtitle")}
+            </motion.h2>
+
+            {/* Description */}
+            <motion.p
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.4 }}
+              className="text-xl text-white/90 max-w-3xl mx-auto mb-12"
+            >
+              {editableHero
+                ? (isRTL
+                    ? editableHero.description_ar
+                    : editableHero.description_en) || t("heroDescription")
+                : t("heroDescription")}
+            </motion.p>
+
+            {/* CTA Buttons */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.6 }}
+              className="flex flex-col sm:flex-row justify-center gap-4 mb-16"
+            >
+              <button
+                className="px-8 py-3 bg-yellow-500 text-gray-900 rounded-full font-semibold text-lg hover:bg-yellow-400 transition-colors transform hover:scale-105 shadow-lg"
+                onClick={() => console.log("Get Started")}
+              >
+                {t("getStarted")}
+              </button>
+              <button
+                className="px-8 py-3 border-2 border-white text-white rounded-full font-semibold text-lg hover:bg-white hover:text-gray-900 transition-colors shadow-lg"
+                onClick={() => console.log("Learn More")}
+              >
+                {t("learnMore")}
+              </button>
+            </motion.div>
+
+            {/* Stats */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 max-w-4xl mx-auto">
+              {statsData.map((stat, index) => (
+                <motion.div
+                  key={index}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: 0.8 + index * 0.1 }}
+                  whileHover={{ scale: 1.05 }}
+                  className="text-center p-4 md:p-6 bg-white/10 backdrop-blur-sm rounded-xl border border-white/20"
+                >
+                  <div className="text-2xl md:text-3xl font-bold text-white mb-1">
+                    {stat.value}
+                  </div>
+                  <div className="text-sm md:text-base text-white/80">
+                    {stat.label}
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Scroll Indicator */}
+      <motion.div
+        animate={{ y: [0, 10, 0] }}
+        transition={{ duration: 2, repeat: Infinity }}
+        className="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-10"
+      >
+        <div className="w-6 h-10 border-2 border-white/50 rounded-full flex justify-center">
+          <div className="w-1 h-3 bg-white/70 rounded-full mt-2"></div>
+        </div>
+      </motion.div>
+    </section>
+  );
+};
+
+export default HeroSection;

@@ -1,0 +1,437 @@
+"use client";
+import React, { useState } from 'react';
+import { motion } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
+import { 
+  Mail, 
+  Phone, 
+  MapPin, 
+  Clock, 
+  Send, 
+  CheckCircle,
+  MessageSquare,
+  Globe,
+  Users
+} from 'lucide-react';
+
+const Contact = () => {
+  const { t, i18n } = useTranslation();
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    phone: '',
+    subject: '',
+    message: ''
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSubmitted, setIsSubmitted] = useState(false);
+  const dir = i18n.language === 'ar' ? 'rtl' : 'ltr';
+
+  const contactInfo = [
+    {
+      icon: Mail,
+      title: t('contactSection.cards.emailUs'),
+      details: ['info@nuttyscientists-egypt.com'],
+      color: 'from-blue-400 to-cyan-500'
+    },
+    {
+      icon: Phone,
+      title: t('contactSection.cards.callUs'),
+      details: [t('contactSection.cards.phone1'), t('contactSection.cards.phone2')],
+      color: 'from-green-400 to-emerald-500'
+    },
+    {
+      icon: MapPin,
+      title: t('contactSection.cards.visitUs'),
+      details: [t('contactSection.location.address')],
+      color: 'from-purple-400 to-pink-500'
+    },
+    {
+      icon: Clock,
+      title: t('contactSection.cards.workingHours'),
+      details: [t('contactSection.cards.workingDaily')],
+      color: 'from-orange-400 to-red-500'
+    }
+  ];
+
+  const departments = [
+    {
+      name: t('contactSection.departments.general'),
+      email: 'info@nuttyscientists-egypt.com',
+      phone: t('contactSection.cards.phone1'),
+      icon: MessageSquare
+    },
+    {
+      name: t('contactSection.departments.school'),
+      email: 'info@nuttyscientists-egypt.com',
+      phone: t('contactSection.cards.phone2'),
+      icon: Users
+    },
+    {
+      name: t('contactSection.departments.corporate'),
+      email: 'info@nuttyscientists-egypt.com',
+      phone: t('contactSection.cards.phone1'),
+      icon: Globe
+    }
+  ];
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value
+    });
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    
+    // Simulate API call
+    await new Promise(resolve => setTimeout(resolve, 1500));
+    
+    setIsSubmitting(false);
+    setIsSubmitted(true);
+    
+    // Reset form after 3 seconds
+    setTimeout(() => {
+      setIsSubmitted(false);
+      setFormData({
+        name: '',
+        email: '',
+        phone: '',
+        subject: '',
+        message: ''
+      });
+    }, 3000);
+  };
+
+  return (
+    <section id="contact" className="py-20 bg-white dark:bg-gray-900" dir={dir}>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Header */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="text-center mb-16"
+        >
+          <h2 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-4">
+            {t('contactTitle')}
+          </h2>
+          <p className="text-xl text-gray-600 dark:text-gray-400 max-w-3xl mx-auto">
+            {t('contactSection.lead')}
+          </p>
+        </motion.div>
+
+        <div className="grid lg:grid-cols-3 gap-12">
+          {/* Contact Information */}
+          <motion.div
+            initial={{ opacity: 0, x: -20 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            className="lg:col-span-1"
+          >
+            {/* Contact Cards */}
+            <div className="space-y-6 mb-12">
+              {contactInfo.map((info, index) => {
+                const Icon = info.icon;
+                return (
+                  <motion.div
+                    key={index}
+                    whileHover={{ scale: 1.02 }}
+                    className="bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900 rounded-2xl p-6 shadow-lg"
+                  >
+                    <div className={`w-14 h-14 rounded-xl bg-gradient-to-br ${info.color} p-3 mb-4`}>
+                      <Icon className="w-full h-full text-white" />
+                    </div>
+                    <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-3">
+                      {info.title}
+                    </h3>
+                    {info.details.map((detail, i) => (
+                      <p 
+                        key={i} 
+                        className={`text-gray-600 dark:text-gray-400 ${info.icon === Phone ? 'font-sans' : ''}`}
+                        dir={info.icon === Phone ? "ltr" : undefined}
+                        style={info.icon === Phone && dir === 'rtl' ? { textAlign: 'right' } : undefined}
+                      >
+                        {detail}
+                      </p>
+                    ))}
+                  </motion.div>
+                );
+              })}
+            </div>
+
+            {/* Departments */}
+            <div>
+              <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">
+                {t('contactSection.departments.title')}
+              </h3>
+              <div className="space-y-4">
+                {departments.map((dept, index) => {
+                  const Icon = dept.icon;
+                  return (
+                    <div key={index} className="bg-gray-50 dark:bg-gray-800 rounded-xl p-4">
+                      <div className="flex items-start">
+                        <Icon className="w-5 h-5 text-nutty-blue mt-1 mr-3 rtl:mr-0 rtl:ml-3 flex-shrink-0" />
+                        <div>
+                          <h4 className="font-bold text-gray-900 dark:text-white">
+                            {dept.name}
+                          </h4>
+                          <p className="text-sm text-gray-600 dark:text-gray-400">
+                            {dept.email}
+                          </p>
+                          <p className="text-sm text-gray-600 dark:text-gray-400">
+                            {dept.phone}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          </motion.div>
+
+          {/* Contact Form */}
+          <motion.div
+            initial={{ opacity: 0, x: 20 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            className="lg:col-span-2"
+          >
+            <div className="bg-gradient-to-br from-blue-50 to-purple-50 dark:from-gray-800 dark:to-gray-900 rounded-2xl p-8 shadow-lg">
+              {isSubmitted ? (
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  className="text-center py-12"
+                >
+                  <CheckCircle className="w-20 h-20 text-green-500 mx-auto mb-6" />
+                  <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
+                    {t('contactSection.form.successTitle')}
+                  </h3>
+                  <p className="text-gray-600 dark:text-gray-400">
+                    {t('contactSection.form.successDesc')}
+                  </p>
+                </motion.div>
+              ) : (
+                <>
+                  <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-8">
+                    {t('contactSection.form.title')}
+                  </h3>
+                  
+                  <form onSubmit={handleSubmit} className="space-y-6">
+                    <div className="grid md:grid-cols-2 gap-6">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                          {t('name')} *
+                        </label>
+                        <input
+                          type="text"
+                          name="name"
+                          value={formData.name}
+                          onChange={handleChange}
+                          required
+                          className="w-full px-4 py-3 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-nutty-blue focus:border-transparent transition-all"
+                          placeholder={t('contactSection.form.placeholders.name')}
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                          {t('email')} *
+                        </label>
+                        <input
+                          type="email"
+                          name="email"
+                          value={formData.email}
+                          onChange={handleChange}
+                          required
+                          className="w-full px-4 py-3 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-nutty-blue focus:border-transparent transition-all"
+                          placeholder={t('contactSection.form.placeholders.email')}
+                        />
+                      </div>
+                    </div>
+
+                    <div className="grid md:grid-cols-2 gap-6">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                          {t('phone')}
+                        </label>
+                        <input
+                          type="tel"
+                          name="phone"
+                          value={formData.phone}
+                          onChange={handleChange}
+                          className="w-full px-4 py-3 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-nutty-blue focus:border-transparent transition-all"
+                          placeholder={t('contactSection.form.placeholders.phone')}
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                          {t('subject')} *
+                        </label>
+                        <input
+                          type="text"
+                          name="subject"
+                          value={formData.subject}
+                          onChange={handleChange}
+                          required
+                          className="w-full px-4 py-3 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-nutty-blue focus:border-transparent transition-all"
+                          placeholder={t('contactSection.form.placeholders.subject')}
+                        />
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        {t('message')} *
+                      </label>
+                      <textarea
+                        name="message"
+                        value={formData.message}
+                        onChange={handleChange}
+                        required
+                        rows={6}
+                        className="w-full px-4 py-3 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-nutty-blue focus:border-transparent transition-all resize-none"
+                        placeholder={t('contactSection.form.placeholders.message')}
+                      />
+                    </div>
+
+                    <div className="flex items-center justify-between">
+                      <p className="text-sm text-gray-600 dark:text-gray-400">
+                        {t('contactSection.form.required')}
+                      </p>
+                      <button
+                        type="submit"
+                        disabled={isSubmitting}
+                        className="flex items-center px-8 py-3 bg-nutty-blue text-white rounded-lg font-semibold hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        {isSubmitting ? (
+                          <>
+                            <div className="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-white mr-2 rtl:ml-2 rtl:mr-0"></div>
+                            {t('contactSection.form.sending')}
+                          </>
+                        ) : (
+                          <>
+                            <Send className="w-5 h-5 mr-2 rtl:ml-2 rtl:mr-0" />
+                            {t('send')}
+                          </>
+                        )}
+                      </button>
+                    </div>
+                  </form>
+                </>
+              )}
+            </div>
+
+            {/* FAQ Section */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="mt-12"
+            >
+              <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">
+                {t('contactSection.faq.title')}
+              </h3>
+              <div className="space-y-4">
+                {[
+                  {
+                    q: t('contactSection.faq.q1'),
+                    a: t('contactSection.faq.a1')
+                  },
+                  {
+                    q: t('contactSection.faq.q2'),
+                    a: t('contactSection.faq.a2')
+                  },
+                  {
+                    q: t('contactSection.faq.q3'),
+                    a: t('contactSection.faq.a3')
+                  },
+                  {
+                    q: t('contactSection.faq.q4'),
+                    a: t('contactSection.faq.a4')
+                  }
+                ].map((faq, index) => (
+                  <div key={index} className="bg-gray-50 dark:bg-gray-800 rounded-xl p-6">
+                    <h4 className="font-bold text-gray-900 dark:text-white mb-2">
+                      {faq.q}
+                    </h4>
+                    <p className="text-gray-600 dark:text-gray-400">
+                      {faq.a}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </motion.div>
+          </motion.div>
+        </div>
+
+        {/* Map and Location */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="mt-16"
+        >
+          <div className="bg-gradient-to-r from-nutty-yellow to-orange-500 rounded-2xl p-8 md:p-12">
+            <div className="grid lg:grid-cols-2 gap-8 items-center">
+              <div>
+                <h3 className="text-3xl font-bold text-gray-900 mb-4">
+                  {t('contactSection.location.title')}
+                </h3>
+
+                <p className="text-xl text-gray-800 mb-6">
+                  {t('contactSection.location.desc')}
+                </p>
+
+                <div className="space-y-4">
+                  <div className="flex items-center">
+                    <MapPin className="w-5 h-5 text-gray-900 mr-3 rtl:ml-3 rtl:mr-0" />
+                    <span className="text-gray-800">
+                      {t('contactSection.location.address')}
+                    </span>
+                  </div>
+
+                  <div className="flex items-center">
+                    <Clock className="w-5 h-5 text-gray-900 mr-3 rtl:ml-3 rtl:mr-0" />
+                    <span className="text-gray-800">{t('contactSection.location.hours')}</span>
+                  </div>
+
+                  {/* Get Directions Button */}
+                  <a
+                    href="https://www.google.com/maps/place/Nuttyscientists+egypt/@30.046041,31.484228,19z/data=!4m6!3m5!1s0x145823df76b10511:0x3c0863ebcdd54a90!8m2!3d30.0460413!4d31.4842277!16s%2Fg%2F11h2fg23rs?hl=ar&entry=ttu&g_ep=EgoyMDI1MTIwNy4wIKXMDSoASAFQAw%3D%3D"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    >
+                    <button className="mt-4 px-6 py-3 bg-gray-900 text-white rounded-lg font-semibold hover:bg-gray-800 transition-colors">
+                      {t('contactSection.location.getDirections')}
+                    </button>
+                  </a>
+                </div>
+              </div>
+
+              <div className="bg-white rounded-xl p-4 shadow-lg">
+                <div className="h-64 bg-gray-200 rounded-lg overflow-hidden">
+                  <iframe
+                    title="Nutty Scientists Egypt Location"
+                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d215.854942114124!2d31.484534143653725!3d30.046063641548486!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x145823df76b10511%3A0x3c0863ebcdd54a90!2sNuttyscientists%20egypt!5e0!3m2!1sar!2seg!4v1765395168065!5m2!1sar!2seg"
+                    width="100%"
+                    height="100%"
+                    style={{ border: 0 }}
+                    allowFullScreen
+                    loading="lazy"
+                    referrerPolicy="no-referrer-when-downgrade"
+                  ></iframe>
+                </div>
+              </div>
+            </div>
+          </div>
+        </motion.div>
+      </div>
+    </section>
+  );
+};
+
+export default Contact;
