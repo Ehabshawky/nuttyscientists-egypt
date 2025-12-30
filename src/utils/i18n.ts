@@ -131,6 +131,9 @@ const resources = {
       download: "Download",
       buttons: {
         learnMore: "Learn More",
+        back: "Back",
+        viewAll: "View All",
+        related: "Related"
       },
       // Sections
       latestArticles: "Latest Articles",
@@ -175,11 +178,28 @@ const resources = {
         onlineDesc: "Virtual science learning experiences",
         competitionsTitle: "Science Competitions",
         competitionsDesc: "Annual science fairs and hackathons",
+        viewAll: "View All Services",
+        related: "Related Services",
+        showingAll: "Showing all services",
+        showingCategory: "Showing category",
+        showingCategoryServices: "services",
+        tryDifferentCategory: "Try a different category",
+        noServices: "No Services Found",
+        corporateServices: "Corporate services",
+        services: "Services",
+
         stats: {
           satisfactionRate: "Satisfaction Rate",
           happyStudents: "Happy Students",
           schoolsPartnered: "Schools Partnered",
           supportAvailable: "Support Available",
+        },
+        categories: {
+          all: "All Services",
+          families: "Families",
+          schools: "Schools",
+          corporate: "Corporate",
+          organizations: "Organizations",
         },
         cta: {
           title: "Ready to Start Your Science Journey?",
@@ -332,7 +352,7 @@ const resources = {
           hours: "Open Everyday, 9 AM - 9 PM",
           getDirections: "Get Directions"
         }
-      },
+      }
     },
   },
   ar: {
@@ -374,6 +394,7 @@ const resources = {
       partiesDesc: "احتفالات عيد ميلاد ممتعة وتعليمية",
       corporate: "فعاليات الشركات",
       corporateDesc: "بناء فريق بلمسة علمية",
+
 
       // About
       aboutTitle: "عن ناتي ساينتستس",
@@ -448,6 +469,9 @@ const resources = {
       download: "تحميل",
       buttons: {
         learnMore: "تعرف أكثر",
+        back: "العودة",
+        viewAll: "عرض جميع الخدمات",
+        related: "خدمات ذات صلة"
       },
       // Sections
       latestArticles: "أحدث المقالات",
@@ -498,10 +522,21 @@ const resources = {
           schoolsPartnered: "مدارس شريكة",
           supportAvailable: "دعم متاح",
         },
+        categories: {
+          all: "الكل",
+          families: "العائلات",
+          schools: "المدارس",
+          corporate: "الشركات",
+          organizations: "المنظمات",
+        },
+        noServices: "لا يوجد خدمات",
+        tryDifferentCategory: "حاول فئة مختلفة",
         cta: {
           title: "هل أنت جاهز لبدء رحلة علومك؟",
           desc: "احجز ورشة عمل أو استشارة مع علماءنا الخبراء اليوم!",
         },
+        viewAll: "عرض جميع الخدمات",
+        related: "خدمات ذات صلة"
       },
 
       // Articles (Arabic)

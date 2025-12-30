@@ -74,7 +74,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
     { icon: ImageIcon, label: "Hero Slides", labelAr: "شرائح ", href: "/admin/hero" },
     { icon: FileText, label: "Services", labelAr: "خدمات", href: "/admin/services" },  
     { icon: FileText, label: "About", labelAr: "عننا", href: "/admin/about" },
-    { icon: Target, label: "Projects", labelAr: "المشاريع", href: "/admin/projects" },
+    // { icon: Target, label: "Projects", labelAr: "المشاريع", href: "/admin/projects" },
     { icon: Users, label: "Team", labelAr: "الفريق", href: "/admin/team" },
     { icon: Briefcase, label: "Careers", labelAr: "الوظائف", href: "/admin/careers" },
     { icon: FileText, label: "Articles", labelAr: "المقالات", href: "/admin/articles" },

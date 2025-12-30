@@ -4,7 +4,7 @@
 import React, { useState, useEffect, ChangeEvent } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslation } from "react-i18next";
-import { Save, Trash2, Upload, Image as ImageIcon } from "lucide-react";
+import { Save, Trash2, Upload, Image as ImageIcon, Tag } from "lucide-react";
 import Image from "next/image";
 import AdminLayout from "@/components/admin/AdminLayout";
 
@@ -20,15 +20,24 @@ export default function AdminServicesPage() {
   const [message, setMessage] = useState("");
   const [editId, setEditId] = useState<string | null>(null);
   const [newService, setNewService] = useState({
-    title_en: "",
-    title_ar: "",
-    description_en: "",
-    description_ar: "",
-    long_description_en: "",
-    long_description_ar: "",
-    image: "",
-    icon: "Beaker",
-  });
+  title_en: "",
+  title_ar: "",
+  description_en: "",
+  description_ar: "",
+  long_description_en: "",
+  long_description_ar: "",
+  image: "",
+  icon: "Beaker",
+  category: "families",
+  duration: "2-3 hours",
+  participants_min: 10,
+  participants_max: 30,
+  schedule_type: "flexible",
+  location_type: "on-site,online",
+  age_group: "",
+  price_range: "",
+  features: "[]",
+});
 
   // Load existing services
   useEffect(() => {
@@ -124,6 +133,15 @@ export default function AdminServicesPage() {
       long_description_ar: svc.long_description_ar || "",
       image: svc.image,
       icon: svc.icon || "Beaker",
+      category: svc.category || "families",
+      duration: svc.duration || "2-3 hours",
+      participants_min: svc.participants_min || 10,
+      participants_max: svc.participants_max || 30,
+      schedule_type: svc.schedule_type || "flexible",
+      location_type: svc.location_type || "on-site,online",
+      age_group: svc.age_group || "",
+      price_range: svc.price_range || "",
+      features: svc.features || "[]",
     });
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
@@ -138,7 +156,16 @@ export default function AdminServicesPage() {
       long_description_en: "",
       long_description_ar: "",
       image: "",
-      icon: "Beaker"
+      icon: "Beaker",
+      category: "families", 
+      duration: "2-3 hours",
+      participants_min: 10,
+      participants_max: 30,
+      schedule_type: "flexible",
+      location_type: "on-site,online",
+      age_group: "",
+      price_range: "",
+      features: "[]",
     });
   };
 
@@ -157,6 +184,26 @@ export default function AdminServicesPage() {
     }
   };
 
+  // دالة لإرجاع اسم الفئة بلغة مقروءة
+  const getCategoryLabel = (category: string) => {
+    const categories = {
+      families: isRTL ? "عائلات" : "Families",
+      schools: isRTL ? "مدارس" : "Schools",
+      corporate: isRTL ? "شركات" : "Corporate",
+    };
+    return categories[category as keyof typeof categories] || category;
+  };
+
+  // دالة لإرجاع لون الفئة
+  const getCategoryColor = (category: string) => {
+    const colors = {
+      families: "bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200",
+      schools: "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200",
+      corporate: "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200",
+    };
+    return colors[category as keyof typeof colors] || "bg-gray-100 text-gray-800";
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900">
@@ -173,12 +220,17 @@ export default function AdminServicesPage() {
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Header */}
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-8 gap-4">
-            <h2 className="text-3xl font-bold text-gray-900 dark:text-white">
-              {isRTL ? "إدارة الخدمات" : "Manage Services"}
-            </h2>
+            <div>
+              <h2 className="text-3xl font-bold text-gray-900 dark:text-white">
+                {isRTL ? "إدارة الخدمات" : "Manage Services"}
+              </h2>
+              <p className="text-gray-600 dark:text-gray-400 mt-2">
+                {isRTL ? "أضف وعدل خدماتك المصنفة حسب الفئات" : "Add and manage your services categorized by type"}
+              </p>
+            </div>
             <button
               onClick={() => router.push("/services")}
-              className="px-4 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+              className="px-4 py-2 bg-nutty-blue text-white rounded-lg hover:bg-nutty-blue/90 transition-colors"
             >
               {isRTL ? "معاينة الصفحة العامة" : "Preview Public Page"}
             </button>
@@ -186,144 +238,382 @@ export default function AdminServicesPage() {
 
           {/* Message */}
           {message && (
-            <div className={`mb-6 p-3 rounded ${message.includes("success") || message.includes("نجاح") || message.includes("تم") ? "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200" : "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200"}`}>
+            <div className={`mb-6 p-4 rounded-lg ${message.includes("success") || message.includes("نجاح") || message.includes("تم") ? "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200" : "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200"}`}>
               {message}
             </div>
           )}
 
           {/* Services List */}
-          <div className="mb-8">
-            <h3 className="text-xl font-semibold mb-4 text-gray-900 dark:text-white">
-              {isRTL ? "الخدمات الحالية" : "Current Services"}
-            </h3>
-            <div className="space-y-4">
-              {services.length === 0 ? (
-                <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 text-center text-gray-500 dark:text-gray-400">
+          <div className="mb-10">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-xl font-semibold text-gray-900 dark:text-white">
+                {isRTL ? "الخدمات الحالية" : "Current Services"}
+              </h3>
+              <div className="text-sm text-gray-500 dark:text-gray-400">
+                {services.length} {isRTL ? "خدمة" : "services"}
+              </div>
+            </div>
+            
+            {services.length === 0 ? (
+              <div className="bg-white dark:bg-gray-800 rounded-xl shadow p-8 text-center text-gray-500 dark:text-gray-400">
+                <div className="text-5xl mb-4">📋</div>
+                <p className="text-lg mb-2">
                   {isRTL ? "لا توجد خدمات مضافة بعد" : "No services added yet"}
-                </div>
-              ) : (
-                services.map((svc) => (
-                  <div key={svc.id} className="bg-white dark:bg-gray-800 rounded-lg shadow p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-                    <div className="flex items-start gap-4 flex-1">
-                      {svc.image && (
-                        <div className="relative w-20 h-20 flex-shrink-0">
-                          <Image 
-                            src={svc.image} 
-                            alt="Service" 
-                            fill
-                            className="object-cover rounded" 
-                          />
+                </p>
+                <p className="text-sm">
+                  {isRTL ? "ابدأ بإضافة خدمتك الأولى أدناه" : "Start by adding your first service below"}
+                </p>
+              </div>
+            ) : (
+              <div className="grid gap-4">
+                {services.map((svc) => (
+                  <div key={svc.id} className="bg-white dark:bg-gray-800 rounded-xl shadow p-5 hover:shadow-lg transition-shadow">
+                    <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+                      <div className="flex items-start gap-4 flex-1">
+                        {svc.image && (
+                          <div className="relative w-24 h-24 flex-shrink-0 rounded-lg overflow-hidden">
+                            <Image 
+                              src={svc.image} 
+                              alt="Service" 
+                              fill
+                              className="object-cover" 
+                            />
+                          </div>
+                        )}
+                        <div className="flex-1">
+                          <div className="flex flex-wrap items-center gap-2 mb-2">
+                            <h4 className="font-bold text-lg text-gray-900 dark:text-white">{svc.title_en}</h4>
+                            <span className={`px-2 py-1 text-xs font-medium rounded-full ${getCategoryColor(svc.category)}`}>
+                              {getCategoryLabel(svc.category)}
+                            </span>
+                            {svc.icon && (
+                              <span className="text-gray-400 dark:text-gray-500 text-sm">
+                                {svc.icon === "Beaker" && "🧪"}
+                                {svc.icon === "FlaskRound" && "⚗️"}
+                                {svc.icon === "Atom" && "⚛️"}
+                                {svc.icon === "Rocket" && "🚀"}
+                                {svc.icon === "Brain" && "🧠"}
+                                {svc.icon === "Microscope" && "🔬"}
+                                {svc.icon === "Target" && "🎯"}
+                                {svc.icon === "Eye" && "👁️"}
+                              </span>
+                            )}
+                          </div>
+                          <p className="text-gray-600 dark:text-gray-400 line-clamp-2 text-sm">{svc.description_en}</p>
+                          <div className="flex items-center gap-2 mt-3 text-sm text-gray-500 dark:text-gray-500">
+                            <span>ID: {svc.id?.substring(0, 8)}...</span>
+                          </div>
                         </div>
-                      )}
-                      <div className="flex-1">
-                        <h4 className="font-bold text-gray-900 dark:text-white">{svc.title_en}</h4>
-                        <p className="text-gray-600 dark:text-gray-400 line-clamp-1 text-sm mt-1">{svc.description_en}</p>
+                      </div>
+                      <div className="flex items-center gap-2 self-stretch md:self-center">
+                        <button
+                          onClick={() => handleEdit(svc)}
+                          className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition flex items-center gap-2"
+                        >
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                          </svg>
+                          {isRTL ? "تعديل" : "Edit"}
+                        </button>
+                        <button
+                          onClick={() => handleDelete(svc.id)}
+                          className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition flex items-center gap-2"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                          {isRTL ? "حذف" : "Delete"}
+                        </button>
                       </div>
                     </div>
-                    <div className="flex items-center gap-2 self-end sm:self-center">
-                      <button
-                        onClick={() => handleEdit(svc)}
-                        className="px-3 py-1.5 bg-blue-500 text-white rounded hover:bg-blue-600 transition text-sm"
-                      >
-                        {isRTL ? "تعديل" : "Edit"}
-                      </button>
-                      <button
-                        onClick={() => handleDelete(svc.id)}
-                        className="flex items-center px-3 py-1.5 bg-red-500 text-white rounded hover:bg-red-600 transition text-sm"
-                      >
-                        <Trash2 className="w-4 h-4 mr-1" />
-                        {isRTL ? "حذف" : "Delete"}
-                      </button>
-                    </div>
                   </div>
-                ))
-              )}
-            </div>
+                ))}
+              </div>
+            )}
           </div>
 
           {/* New/Edit Service Form */}
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
-            <h3 className="text-xl font-semibold mb-4 text-gray-900 dark:text-white">
-              {editId 
-                ? (isRTL ? "تعديل الخدمة" : "Edit Service") 
-                : (isRTL ? "إضافة خدمة جديدة" : "Add New Service")}
-            </h3>
-            <div className="grid md:grid-cols-2 gap-4">
-              <input
-                type="text"
-                placeholder={isRTL ? "العنوان (English)" : "Title (English)"}
-                value={newService.title_en}
-                onChange={(e) => handleFieldChange("title_en", e.target.value)}
-                className="w-full p-3 border rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white border-gray-300 dark:border-gray-600"
-              />
-              <input
-                type="text"
-                dir="rtl"
-                placeholder={isRTL ? "العنوان (Arabic)" : "Title (Arabic)"}
-                value={newService.title_ar}
-                onChange={(e) => handleFieldChange("title_ar", e.target.value)}
-                className="w-full p-3 border rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white border-gray-300 dark:border-gray-600"
-              />
-              <textarea
-                rows={3}
-                placeholder={isRTL ? "الوصف المختصر (English)" : "Short Description (English)"}
-                value={newService.description_en}
-                onChange={(e) => handleFieldChange("description_en", e.target.value)}
-                className="w-full p-3 border rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white border-gray-300 dark:border-gray-600"
-              />
-              <textarea
-                rows={3}
-                dir="rtl"
-                placeholder={isRTL ? "الوصف المختصر (Arabic)" : "Short Description (Arabic)"}
-                value={newService.description_ar}
-                onChange={(e) => handleFieldChange("description_ar", e.target.value)}
-                className="w-full p-3 border rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white border-gray-300 dark:border-gray-600"
-              />
-              <textarea
-                rows={6}
-                placeholder={isRTL ? "الوصف التفصيلي (English)" : "Detailed Description (English)"}
-                value={newService.long_description_en}
-                onChange={(e) => handleFieldChange("long_description_en", e.target.value)}
-                className="w-full p-3 border rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white border-gray-300 dark:border-gray-600 md:col-span-2"
-              />
-              <textarea
-                rows={6}
-                dir="rtl"
-                placeholder={isRTL ? "الوصف التفصيلي (Arabic)" : "Detailed Description (Arabic)"}
-                value={newService.long_description_ar}
-                onChange={(e) => handleFieldChange("long_description_ar", e.target.value)}
-                className="w-full p-3 border rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white border-gray-300 dark:border-gray-600 md:col-span-2"
-              />
-              <div className="md:col-span-2">
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 md:p-8">
+            <div className="flex items-center gap-3 mb-6">
+              <div className="p-2 bg-nutty-orange/10 rounded-lg">
+                <Tag className="w-6 h-6 text-nutty-orange" />
+              </div>
+              <h3 className="text-2xl font-bold text-gray-900 dark:text-white">
+                {editId 
+                  ? (isRTL ? "تعديل الخدمة" : "Edit Service") 
+                  : (isRTL ? "إضافة خدمة جديدة" : "Add New Service")}
+              </h3>
+            </div>
+
+            <div className="grid md:grid-cols-2 gap-6">
+              {/* Basic Info */}
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    {isRTL ? "العنوان (English)" : "Title (English)"} *
+                  </label>
+                  <input
+                    type="text"
+                    placeholder={isRTL ? "مثال: Science Workshops" : "e.g., Science Workshops"}
+                    value={newService.title_en}
+                    onChange={(e) => handleFieldChange("title_en", e.target.value)}
+                    className="w-full p-3 border rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-nutty-orange focus:border-transparent outline-none transition"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    {isRTL ? "العنوان (Arabic)" : "Title (Arabic)"} *
+                  </label>
+                  <input
+                    type="text"
+                    dir="rtl"
+                    placeholder={isRTL ? "مثال: ورش العمل العلمية" : "e.g., ورش العمل العلمية"}
+                    value={newService.title_ar}
+                    onChange={(e) => handleFieldChange("title_ar", e.target.value)}
+                    className="w-full p-3 border rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-nutty-orange focus:border-transparent outline-none transition"
+                  />
+                </div>
+              </div>
+
+              {/* Category and Icon */}
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    {isRTL ? "فئة الخدمة" : "Service Category"} *
+                  </label>
+                  <div className="grid grid-cols-3 gap-2">
+                    {["families", "schools", "corporate"].map((cat) => (
+                      <button
+                        key={cat}
+                        type="button"
+                        onClick={() => handleFieldChange("category", cat)}
+                        className={`p-3 rounded-lg border transition-all ${
+                          newService.category === cat
+                            ? cat === "families"
+                              ? "border-purple-500 bg-purple-50 dark:bg-purple-900/20 text-purple-700 dark:text-purple-300"
+                              : cat === "schools"
+                              ? "border-green-500 bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-300"
+                              : "border-blue-500 bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300"
+                            : "border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600"
+                        }`}
+                      >
+                        <div className="text-sm font-medium capitalize">
+                          {getCategoryLabel(cat)}
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    {isRTL ? "أيقونة الخدمة" : "Service Icon"}
+                  </label>
+                  <select
+                    value={newService.icon}
+                    onChange={(e) => handleFieldChange("icon", e.target.value)}
+                    className="w-full p-3 border rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-nutty-orange focus:border-transparent outline-none transition"
+                  >
+                    <option value="Beaker">🧪 Beaker</option>
+                    <option value="FlaskRound">⚗️ Flask</option>
+                    <option value="Atom">⚛️ Atom</option>
+                    <option value="Rocket">🚀 Rocket</option>
+                    <option value="Brain">🧠 Brain</option>
+                    <option value="Microscope">🔬 Microscope</option>
+                    <option value="Target">🎯 Target</option>
+                    <option value="Eye">👁️ Eye</option>
+                    <option value="Heart">❤️ Heart</option>
+                    <option value="Users">👥 Users</option>
+                    <option value="Shield">🛡️ Shield</option>
+                    <option value="Globe">🌐 Globe</option>
+                    <option value="Clock">🕒 Clock</option>
+                    <option value="Award">🏆 Award</option>
+                  </select>
+                </div>
+              </div>
+
+              {/* Descriptions */}
+              <div className="md:col-span-2 space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    {isRTL ? "الوصف المختصر (English)" : "Short Description (English)"} *
+                  </label>
+                  <textarea
+                    rows={3}
+                    placeholder={isRTL ? "وصف قصير يظهر في بطاقة الخدمة..." : "Short description that appears on service card..."}
+                    value={newService.description_en}
+                    onChange={(e) => handleFieldChange("description_en", e.target.value)}
+                    className="w-full p-3 border rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-nutty-orange focus:border-transparent outline-none transition"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    {isRTL ? "الوصف المختصر (Arabic)" : "Short Description (Arabic)"} *
+                  </label>
+                  <textarea
+                    rows={3}
+                    dir="rtl"
+                    placeholder={isRTL ? "وصف قصير يظهر في بطاقة الخدمة..." : "وصف قصير يظهر في بطاقة الخدمة..."}
+                    value={newService.description_ar}
+                    onChange={(e) => handleFieldChange("description_ar", e.target.value)}
+                    className="w-full p-3 border rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-nutty-orange focus:border-transparent outline-none transition"
+                  />
+                </div>
+              </div>
+
+              {/* Detailed Descriptions */}
+              <div className="md:col-span-2 space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    {isRTL ? "الوصف التفصيلي (English)" : "Detailed Description (English)"}
+                  </label>
+                  <textarea
+                    rows={4}
+                    placeholder={isRTL ? "وصف مفصل يظهر في صفحة الخدمة التفصيلية..." : "Detailed description that appears on service detail page..."}
+                    value={newService.long_description_en}
+                    onChange={(e) => handleFieldChange("long_description_en", e.target.value)}
+                    className="w-full p-3 border rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-nutty-orange focus:border-transparent outline-none transition"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    {isRTL ? "الوصف التفصيلي (Arabic)" : "Detailed Description (Arabic)"}
+                  </label>
+                  <textarea
+                    rows={4}
+                    dir="rtl"
+                    placeholder={isRTL ? "وصف مفصل يظهر في صفحة الخدمة التفصيلية..." : "وصف مفصل يظهر في صفحة الخدمة التفصيلية..."}
+                    value={newService.long_description_ar}
+                    onChange={(e) => handleFieldChange("long_description_ar", e.target.value)}
+                    className="w-full p-3 border rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-nutty-orange focus:border-transparent outline-none transition"
+                  />
+                </div>
+              </div>
+
+              <div className="md:col-span-2 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+              {/* Duration */}
+              <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  {isRTL ? "أيقونة الخدمة" : "Service Icon"}
+                  {isRTL ? "المدة" : "Duration"}
+                </label>
+                <input
+                  type="text"
+                  placeholder={isRTL ? "مثال: ٢-٣ ساعات" : "e.g., 2-3 hours"}
+                  value={newService.duration}
+                  onChange={(e) => handleFieldChange("duration", e.target.value)}
+                  className="w-full p-3 border rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white border-gray-300 dark:border-gray-600"
+                />
+              </div>
+
+              {/* Participants Range */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  {isRTL ? "عدد المشاركين" : "Participants"}
+                </label>
+                <div className="flex gap-2">
+                  <input
+                    type="number"
+                    placeholder={isRTL ? "أدنى" : "Min"}
+                    value={newService.participants_min}
+                    onChange={(e) => handleFieldChange("participants_min", e.target.value)}
+                    className="w-full p-3 border rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white border-gray-300 dark:border-gray-600"
+                  />
+                  <input
+                    type="number"
+                    placeholder={isRTL ? "أقصى" : "Max"}
+                    value={newService.participants_max}
+                    onChange={(e) => handleFieldChange("participants_max", e.target.value)}
+                    className="w-full p-3 border rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white border-gray-300 dark:border-gray-600"
+                  />
+                </div>
+              </div>
+
+              {/* Schedule Type */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  {isRTL ? "نوع الجدول" : "Schedule Type"}
                 </label>
                 <select
-                  value={newService.icon}
-                  onChange={(e) => handleFieldChange("icon", e.target.value)}
-                  className="w-full p-3 border rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-nutty-orange outline-none"
+                  value={newService.schedule_type}
+                  onChange={(e) => handleFieldChange("schedule_type", e.target.value)}
+                  className="w-full p-3 border rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white border-gray-300 dark:border-gray-600"
                 >
-                  <option value="Beaker">Beaker 🧪</option>
-                  <option value="FlaskRound">Flask ⚗️</option>
-                  <option value="Atom">Atom ⚛️</option>
-                  <option value="Rocket">Rocket 🚀</option>
-                  <option value="Brain">Brain 🧠</option>
-                  <option value="Microscope">Microscope 🔬</option>
-                  <option value="Target">Target 🎯</option>
-                  <option value="Eye">Eye 👁️</option>
-                  <option value="Heart">Heart ❤️</option>
-                  <option value="Users">Users 👥</option>
-                  <option value="Shield">Shield 🛡️</option>
-                  <option value="Globe">Globe 🌐</option>
-                  <option value="Clock">Clock 🕒</option>
-                  <option value="Award">Award 🏆</option>
+                  <option value="flexible">{isRTL ? "مرنة" : "Flexible"}</option>
+                  <option value="fixed">{isRTL ? "ثابت" : "Fixed"}</option>
+                  <option value="customizable">{isRTL ? "قابلة للتخصيص" : "Customizable"}</option>
+                  <option value="weekdays">{isRTL ? "أيام الأسبوع" : "Weekdays"}</option>
+                  <option value="weekends">{isRTL ? "عطلات نهاية الأسبوع" : "Weekends"}</option>
                 </select>
               </div>
+
+              {/* Location Type */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  {isRTL ? "نوع الموقع" : "Location Type"}
+                </label>
+                <div className="space-y-2">
+                  {['on-site', 'online', 'hybrid', 'mobile'].map((type) => (
+                    <label key={type} className="flex items-center gap-2">
+                      <input
+                        type="checkbox"
+                        checked={newService.location_type.includes(type)}
+                        onChange={(e) => {
+                          const types = newService.location_type.split(',').filter(t => t);
+                          if (e.target.checked) {
+                            types.push(type);
+                          } else {
+                            const index = types.indexOf(type);
+                            if (index > -1) types.splice(index, 1);
+                          }
+                          handleFieldChange("location_type", types.join(','));
+                        }}
+                        className="rounded border-gray-300"
+                      />
+                      <span className="text-sm text-gray-700 dark:text-gray-300">
+                        {isRTL ? 
+                          (type === 'on-site' ? 'في الموقع' : 
+                          type === 'online' ? 'أونلاين' : 
+                          type === 'hybrid' ? 'مختلط' : 'متنقل') :
+                          type.charAt(0).toUpperCase() + type.slice(1)
+                        }
+                      </span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* Age Group and Price Range */}
+            <div className="grid md:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  {isRTL ? "الفئة العمرية" : "Age Group"}
+                </label>
+                <input
+                  type="text"
+                  placeholder={isRTL ? "مثال: ٨-١٦ سنة" : "e.g., 8-16 years"}
+                  value={newService.age_group}
+                  onChange={(e) => handleFieldChange("age_group", e.target.value)}
+                  className="w-full p-3 border rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white border-gray-300 dark:border-gray-600"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  {isRTL ? "نطاق السعر" : "Price Range"}
+                </label>
+                <input
+                  type="text"
+                  placeholder={isRTL ? "مثال: ١٠٠-٣٠٠ جنيه  " : "e.g., 100-300 EGP"}
+                  value={newService.price_range}
+                  onChange={(e) => handleFieldChange("price_range", e.target.value)}
+                  className="w-full p-3 border rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white border-gray-300 dark:border-gray-600"
+                />
+              </div>
+            </div>
+
+              {/* Image Upload */}
               <div className="md:col-span-2">
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   {isRTL ? "صورة الخدمة" : "Service Image"}
                 </label>
-                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+                <div className="flex flex-col lg:flex-row items-start lg:items-center gap-6">
                   <div className="flex-1">
                     <input
                       type="file"
@@ -335,47 +625,91 @@ export default function AdminServicesPage() {
                     />
                     <label
                       htmlFor="service-image-upload"
-                      className={`flex items-center justify-center px-4 py-3 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-600 transition ${uploading ? "opacity-50 cursor-not-allowed" : ""}`}
+                      className={`flex flex-col items-center justify-center p-8 border-2 border-dashed rounded-xl cursor-pointer transition ${uploading 
+                        ? "border-gray-400 bg-gray-50 dark:bg-gray-700/50 opacity-50 cursor-not-allowed" 
+                        : "border-gray-300 dark:border-gray-600 hover:border-nutty-orange hover:bg-nutty-orange/5"}`}
                     >
-                      <Upload className="w-4 h-4 mr-2" />
-                      {uploading 
-                        ? (isRTL ? "جاري الرفع..." : "Uploading...") 
-                        : (isRTL ? "رفع صورة الخدمة" : "Upload Service Image")}
+                      <Upload className="w-12 h-12 text-gray-400 dark:text-gray-500 mb-4" />
+                      <span className="text-gray-700 dark:text-gray-300 font-medium mb-2">
+                        {uploading 
+                          ? (isRTL ? "جاري رفع الصورة..." : "Uploading image...") 
+                          : (isRTL ? "انقر لرفع صورة الخدمة" : "Click to upload service image")}
+                      </span>
+                      <span className="text-sm text-gray-500 dark:text-gray-400">
+                        {isRTL ? "JPG, PNG أو WebP (حتى 5MB)" : "JPG, PNG or WebP (up to 5MB)"}
+                      </span>
                     </label>
                   </div>
                   {newService.image && (
-                    <div className="relative w-32 h-32 rounded-lg overflow-hidden border border-gray-300 dark:border-gray-600">
-                      <Image
-                        src={newService.image}
-                        alt="Service Preview"
-                        fill
-                        className="object-cover"
-                      />
+                    <div className="lg:w-64">
+                      <p className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        {isRTL ? "معاينة الصورة" : "Image Preview"}
+                      </p>
+                      <div className="relative w-full h-48 rounded-lg overflow-hidden border border-gray-300 dark:border-gray-600">
+                        <Image
+                          src={newService.image}
+                          alt="Service Preview"
+                          fill
+                          className="object-cover"
+                        />
+                      </div>
                     </div>
                   )}
                 </div>
               </div>
+              
             </div>
-            <div className="flex items-center gap-4 mt-6">
-              <button
-                onClick={handleSave}
-                disabled={saving || !newService.title_en || !newService.title_ar}
-                className={`flex items-center px-6 py-2.5 text-white rounded-lg transition ${saving || !newService.title_en || !newService.title_ar ? "bg-gray-400 cursor-not-allowed" : "bg-nutty-orange hover:bg-nutty-orange/90"}`}
-              >
-                <Save className="w-4 h-4 mr-2" />
-                {saving 
-                  ? (isRTL ? "جاري الحفظ..." : "Saving...")
-                  : (isRTL ? (editId ? "تحديث التغييرات" : "حفظ الخدمة") : (editId ? "Update Changes" : "Save Service"))}
-              </button>
-              {editId && (
+
+            {/* Action Buttons */}
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-8 mt-8 border-t border-gray-200 dark:border-gray-700">
+              <div className="text-sm text-gray-500 dark:text-gray-400">
+                {editId ? (
+                  <span>
+                    {isRTL ? "جاري تعديل خدمة ID: " : "Editing service ID: "}
+                    <code className="bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded">{editId.substring(0, 8)}...</code>
+                  </span>
+                ) : (
+                  <span>{isRTL ? "إضافة خدمة جديدة" : "Adding new service"}</span>
+                )}
+              </div>
+              <div className="flex items-center gap-4">
+                {editId && (
+                  <button
+                    onClick={handleCancel}
+                    className="px-6 py-3 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition"
+                  >
+                    {isRTL ? "إلغاء التعديل" : "Cancel Edit"}
+                  </button>
+                )}
                 <button
-                  onClick={handleCancel}
-                  className="px-6 py-2.5 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition"
+                  onClick={handleSave}
+                  disabled={saving || !newService.title_en || !newService.title_ar || !newService.description_en || !newService.description_ar}
+                  className={`flex items-center gap-2 px-8 py-3 rounded-lg font-medium transition ${saving || !newService.title_en || !newService.title_ar || !newService.description_en || !newService.description_ar 
+                    ? "bg-gray-300 dark:bg-gray-600 text-gray-500 dark:text-gray-400 cursor-not-allowed" 
+                    : "bg-nutty-orange text-white hover:bg-nutty-orange/90"}`}
                 >
-                  {isRTL ? "إلغاء" : "Cancel"}
+                  <Save className="w-5 h-5" />
+                  {saving 
+                    ? (isRTL ? "جاري الحفظ..." : "Saving...")
+                    : (editId 
+                      ? (isRTL ? "تحديث الخدمة" : "Update Service") 
+                      : (isRTL ? "إضافة الخدمة" : "Add Service"))}
                 </button>
-              )}
+              </div>
             </div>
+          </div>
+
+          {/* Help Section */}
+          <div className="mt-8 bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800 rounded-xl p-6">
+            <h4 className="font-bold text-blue-800 dark:text-blue-300 mb-2">
+              {isRTL ? "💡 تلميحات مهمة:" : "💡 Important Tips:"}
+            </h4>
+            <ul className="text-blue-700 dark:text-blue-400 text-sm space-y-2 list-disc list-inside">
+              <li>{isRTL ? "اختر الفئة المناسبة لكل خدمة لتظهر في الفلتر في الصفحة العامة" : "Choose the appropriate category for each service to appear in the filter on the public page"}</li>
+              <li>{isRTL ? "العنوان والوصف المختصر مطلوبين باللغتين الإنجليزية والعربية" : "Title and short description are required in both English and Arabic"}</li>
+              <li>{isRTL ? "الفئات المتاحة: عائلات، مدارس، شركات" : "Available categories: Families, Schools, Corporate"}</li>
+              <li>{isRTL ? "الأيقونة والوصف التفصيلي اختياريان" : "Icon and detailed description are optional"}</li>
+            </ul>
           </div>
         </div>
       </section>

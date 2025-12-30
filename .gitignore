@@ -39,3 +39,8 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+seed-admin.js
+setup_admin.sql
+final_hash.txt
+seed_output.txt
+hash.txt

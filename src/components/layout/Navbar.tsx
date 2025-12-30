@@ -60,7 +60,7 @@ const Navbar = () => {
     { name: t("home"), href: "#home"},
     { name: t("servicesNav"), href: "#services" },
     { name: t("aboutNav"), href: "#about" },
-    { name: t("projectsNav"), href: "#projects" },
+    // { name: t("projectsNav"), href: "#projects" },
     { name: t("members"), href: "#members" },
     { name: t("articles"), href: "#articles" },
     { name: t("testimonials"), href: "#testimonials" },

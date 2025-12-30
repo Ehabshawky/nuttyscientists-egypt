@@ -54,7 +54,7 @@ const Footer = () => {
     { label: t("home"), href: "#home" },
     { label: t("servicesNav"), href: "#services" },
     { label: t("aboutNav"), href: "#about" },
-    { label: t("projectsNav"), href: "#projects" },
+    // { label: t("projectsNav"), href: "#projects" },
     { label: t("members"), href: "#members" },
     { label: t("articles"), href: "#articles" },
     { label: t("testimonials"), href: "#testimonials" },

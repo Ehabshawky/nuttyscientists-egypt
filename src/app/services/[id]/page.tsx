@@ -1,3 +1,4 @@
+// src/app/services/[id]/page.tsx
 import ServiceDetailClient from "./ServiceDetailClient";
 
 export default async function ServiceDetailPage({ params }: { params: Promise<{ id: string }> }) {
