@@ -11,6 +11,18 @@ import {
   ChevronRight,
 } from "lucide-react";
 
+type HeroSlide = {
+  id: number;
+  image?: string;
+  video?: string;
+  title_ar?: string;
+  title_en?: string;
+  subtitle_ar?: string;
+  subtitle_en?: string;
+  description_ar?: string;
+  description_en?: string;
+};
+
 const HeroSection = () => {
   const { t, i18n } = useTranslation();
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -98,6 +110,7 @@ const HeroSection = () => {
 
     return () => clearTimeout(timeout);
   }, [currentSlide, editableHero?.slides, heroSlides]);
+  
   useEffect(() => {
     let mounted = true;
     async function load() {
@@ -133,9 +146,16 @@ const HeroSection = () => {
     );
   };
 
+  // Get current slides array
+  const getCurrentSlides = () => {
+    return (editableHero?.slides && editableHero.slides.length > 0) 
+      ? editableHero.slides 
+      : heroSlides;
+  };
+
   return (
-    <section id="home" className="relative pt-20 overflow-hidden">
-      {/* Background Image - Use editable hero slides if available, otherwise use hardcoded slides */}
+    <section id="home" className="relative pt-16 md:pt-20 overflow-hidden">
+      {/* Background Image */}
       <div className="absolute inset-0 z-0">
         {editableHero?.slides && editableHero.slides.length > 0 ? (
           // Use editable hero slides
@@ -160,11 +180,11 @@ const HeroSection = () => {
                   />
                 ) : (
                   <div
-                    className="absolute inset-0 bg-contain md:bg-cover bg-no-repeat bg-center"
+                    className="absolute inset-0 bg-cover bg-no-repeat bg-center"
                     style={{ backgroundImage: `url(${slide.image})` }}
                   />
                 )}
-                <div className="absolute inset-0 bg-black/40" />
+                <div className="absolute inset-0 bg-black/50 md:bg-black/40" />
               </div>
             ))}
           </>
@@ -181,10 +201,10 @@ const HeroSection = () => {
                 }`}
               >
                 <div
-                  className="absolute inset-0 bg-contain md:bg-cover bg-no-repeat bg-center"
+                  className="absolute inset-0 bg-cover bg-no-repeat bg-center"
                   style={{ backgroundImage: `url(${slide.image})` }}
                 />
-                <div className="absolute inset-0 bg-black/60" />
+                <div className="absolute inset-0 bg-black/70 md:bg-black/60" />
               </div>
             ))}
           </>
@@ -192,45 +212,46 @@ const HeroSection = () => {
       </div>
 
       {/* Navigation Buttons - Show if we have multiple slides */}
-      {((editableHero?.slides && editableHero.slides.length > 1) || 
-        (!editableHero?.slides && heroSlides.length > 1)) && (
+      {getCurrentSlides().length > 1 && (
         <>
           <button
             onClick={prevSlide}
-            className="absolute left-4 top-1/2 transform -translate-y-1/2 z-20 bg-white/20 hover:bg-white/40 backdrop-blur-sm rounded-full p-3 transition-all duration-300"
+            className="absolute left-2 md:left-4 top-1/2 transform -translate-y-1/2 z-20 bg-white/20 hover:bg-white/40 backdrop-blur-sm rounded-full p-2 md:p-3 transition-all duration-300"
+            aria-label="Previous slide"
           >
-            <ChevronLeft className="h-6 w-6 text-white" />
+            <ChevronLeft className="h-5 w-5 md:h-6 md:w-6 text-white" />
           </button>
 
           <button
             onClick={nextSlide}
-            className="absolute right-4 top-1/2 transform -translate-y-1/2 z-20 bg-white/20 hover:bg-white/40 backdrop-blur-sm rounded-full p-3 transition-all duration-300"
+            className="absolute right-2 md:right-4 top-1/2 transform -translate-y-1/2 z-20 bg-white/20 hover:bg-white/40 backdrop-blur-sm rounded-full p-2 md:p-3 transition-all duration-300"
+            aria-label="Next slide"
           >
-            <ChevronRight className="h-6 w-6 text-white" />
+            <ChevronRight className="h-5 w-5 md:h-6 md:w-6 text-white" />
           </button>
         </>
       )}
 
       {/* Main Content */}
       <div className="relative z-10">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 md:py-32">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-20 lg:py-32">
           <div className="text-center">
             {/* Animated Icons */}
-            <div className="flex justify-center gap-6 mb-8 flex-wrap">
+            <div className="flex justify-center gap-4 md:gap-6 mb-6 md:mb-8 flex-wrap">
               {icons.map(({ Icon, color }, index) => (
                 <motion.div
                   key={index}
                   initial={{ y: 0 }}
-                  animate={{ y: [0, -15, 0] }}
+                  animate={{ y: [0, -12, 0] }}
                   transition={{
                     duration: 2.5,
                     delay: index * 0.2,
                     repeat: Infinity,
                     ease: "easeInOut",
                   }}
-                  className="bg-white/10 backdrop-blur-sm rounded-full p-4"
+                  className="bg-white/10 backdrop-blur-sm rounded-full p-3 md:p-4"
                 >
-                  <Icon className={`h-8 w-8 ${color}`} />
+                  <Icon className={`h-6 w-6 md:h-8 md:w-8 ${color}`} />
                 </motion.div>
               ))}
             </div>
@@ -240,7 +261,7 @@ const HeroSection = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8 }}
-              className="text-5xl md:text-7xl font-bold text-white mb-6"
+              className="text-3xl xs:text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-white mb-4 md:mb-6 px-2"
             >
               {editableHero?.slides && editableHero.slides.length > 0
                 ? (isRTL 
@@ -254,7 +275,7 @@ const HeroSection = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.2 }}
-              className="text-2xl md:text-3xl text-yellow-400 mb-8"
+              className="text-lg sm:text-xl md:text-2xl lg:text-3xl text-yellow-400 mb-6 md:mb-8 px-4"
             >
               {editableHero?.slides && editableHero.slides.length > 0
                 ? (isRTL
@@ -268,7 +289,7 @@ const HeroSection = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.4 }}
-              className="text-xl text-white/90 max-w-3xl mx-auto mb-12"
+              className="text-base sm:text-lg md:text-xl text-white/90 max-w-3xl mx-auto mb-8 md:mb-12 px-4 md:px-0"
             >
               {editableHero?.slides && editableHero.slides.length > 0
                 ? (isRTL
@@ -282,10 +303,10 @@ const HeroSection = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.6 }}
-              className="flex flex-col sm:flex-row justify-center gap-4 mb-16"
+              className="flex flex-col sm:flex-row justify-center gap-3 sm:gap-4 mb-10 md:mb-16 px-4"
             >
               <button
-                className="px-8 py-3 bg-yellow-500 text-gray-900 rounded-full font-semibold text-lg hover:bg-yellow-400 transition-colors transform hover:scale-105 shadow-lg"
+                className="px-6 py-3 md:px-8 md:py-3 bg-yellow-500 text-gray-900 rounded-full font-semibold text-base md:text-lg hover:bg-yellow-400 transition-colors transform hover:scale-105 shadow-lg w-full sm:w-auto"
                 onClick={() => {
                   const contactSection = document.getElementById("contact");
                   if (contactSection) {
@@ -296,7 +317,7 @@ const HeroSection = () => {
                 {t("getStarted")}
               </button>
               <button
-                className="px-8 py-3 border-2 border-white text-white rounded-full font-semibold text-lg hover:bg-white hover:text-gray-900 transition-colors shadow-lg"
+                className="px-6 py-3 md:px-8 md:py-3 border-2 border-white text-white rounded-full font-semibold text-base md:text-lg hover:bg-white hover:text-gray-900 transition-colors shadow-lg w-full sm:w-auto"
                 onClick={() => {
                   const servicesSection = document.getElementById("services");
                   if (servicesSection) {
@@ -309,7 +330,7 @@ const HeroSection = () => {
             </motion.div>
 
             {/* Stats */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 max-w-4xl mx-auto">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 md:gap-4 lg:gap-6 max-w-4xl mx-auto px-4">
               {statsData.map((stat, index) => (
                 <motion.div
                   key={index}
@@ -317,12 +338,12 @@ const HeroSection = () => {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.5, delay: 0.8 + index * 0.1 }}
                   whileHover={{ scale: 1.05 }}
-                  className="text-center p-4 md:p-6 bg-white/10 backdrop-blur-sm rounded-xl border border-white/20"
+                  className="text-center p-3 md:p-4 lg:p-6 bg-white/10 backdrop-blur-sm rounded-xl border border-white/20"
                 >
-                  <div className="text-2xl md:text-3xl font-bold text-white mb-1">
+                  <div className="text-xl md:text-2xl lg:text-3xl font-bold text-white mb-1">
                     {stat.value}
                   </div>
-                  <div className="text-sm md:text-base text-white/80">
+                  <div className="text-xs sm:text-sm md:text-base text-white/80 leading-tight">
                     {stat.label}
                   </div>
                 </motion.div>
@@ -332,16 +353,59 @@ const HeroSection = () => {
         </div>
       </div>
 
-      {/* Scroll Indicator */}
+    {/* Navigation Controls */}
+    <div className="absolute bottom-6 md:bottom-8 left-1/2 -translate-x-1/2 z-10 flex flex-col items-center gap-4">
+      
+      {/* Slide Indicators */}
+      <div className="flex gap-2">
+        {getCurrentSlides().map((slide: any, index: number) => {
+          const slides = getCurrentSlides();
+          const slidesLength = slides.length;
+          
+          // Consider moving this calculation outside the map for better performance
+          const activeIndex = slidesLength > 0 
+            ? ((currentSlide % slidesLength) + slidesLength) % slidesLength 
+            : 0;
+          
+          const isActive = index === activeIndex;
+          
+          return (
+            <button
+              key={index}
+              onClick={() => setCurrentSlide(index)}
+              className={`
+                h-2 md:h-3 rounded-full transition-all duration-300 
+                focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:ring-offset-2 focus:ring-offset-gray-900
+                ${isActive 
+                  ? "bg-yellow-500 w-4 md:w-6" 
+                  : "bg-white/50 w-2 md:w-3 hover:bg-white/70"
+                }
+              `}
+              aria-label={`Go to slide ${index + 1}`}
+              aria-current={isActive ? "true" : "false"}
+            />
+          );
+        })}
+      </div>
+
+      {/* Scroll/Next Section Indicator */}
       <motion.div
         animate={{ y: [0, 10, 0] }}
-        transition={{ duration: 2, repeat: Infinity }}
-        className="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-10"
+        transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+        className="flex items-center cursor-pointer"
+        onClick={() => {
+          // Optional: Add functionality to scroll to next section
+          // window.scrollBy({ top: window.innerHeight, behavior: 'smooth' });
+        }}
+        aria-label="Scroll to next section"
+        role="button"
+        tabIndex={0}
       >
-        <div className="w-6 h-10 border-2 border-white/50 rounded-full flex justify-center">
-          <div className="w-1 h-3 bg-white/70 rounded-full mt-2"></div>
+        <div className="w-5 h-8 md:w-6 md:h-10 border-2 border-white/50 rounded-full flex justify-center hover:border-white/80 transition-colors">
+          <div className="w-1 h-2 md:h-3 bg-white/70 rounded-full mt-2"></div>
         </div>
       </motion.div>
+    </div>  
     </section>
   );
 };

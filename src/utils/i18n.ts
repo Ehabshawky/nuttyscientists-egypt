@@ -27,6 +27,8 @@ const resources = {
       blogs: "Blog",
       admin: "Admin",
       careers: "Careers",
+      navigation: "Navigation",
+      pages: "Pages",
       searchPlaceholder: "Search articles, projects, scientists...",
 
       // Hero Section
@@ -371,6 +373,8 @@ const resources = {
       blogs: "المدونة",
       admin: "لوحة التحكم",
       careers: "الوظائف",
+      navigation: "الأساسي",
+      pages: "الصفحات",
       searchPlaceholder: "ابحث في المقالات، المشاريع، العلماء...",
 
       // Hero Section
