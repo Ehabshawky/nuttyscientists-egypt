@@ -19,24 +19,38 @@ export async function POST(req: NextRequest) {
 
     if (error) throw error;
 
-    // Send Notification Email
+    // Send Notification Email & Auto-Reply
     try {
-      const { sendNotificationEmail } = await import('@/lib/email');
+      const { sendNotificationEmail, sendConfirmationEmail } = await import('@/lib/email');
+
+      // 1. Send Admin Notification
       await sendNotificationEmail({
-        subject: `New Contact Message from ${name}`,
+        subject: `New Inquiry: ${subject}`,
         html: `
-          <h3>New Message Received</h3>
-          <p><strong>Name:</strong> ${name}</p>
-          <p><strong>Email:</strong> ${email}</p>
-          <p><strong>Phone:</strong> ${phone || 'N/A'}</p>
-          <p><strong>Subject:</strong> ${subject}</p>
-          <p><strong>Message:</strong></p>
-          <p>${message}</p>
+          <div style="margin-bottom: 20px;">
+            <h3 style="color: #444; border-bottom: 1px solid #ddd; padding-bottom: 10px;">Contact Details</h3>
+            <p><strong>Name:</strong> ${name}</p>
+            <p><strong>Email:</strong> <a href="mailto:${email}">${email}</a></p>
+            <p><strong>Phone:</strong> ${phone || 'N/A'}</p>
+          </div>
+          <div>
+            <h3 style="color: #444; border-bottom: 1px solid #ddd; padding-bottom: 10px;">Message Content</h3>
+            <p style="background: #f9fafb; padding: 15px; border-radius: 5px; font-style: italic;">"${message}"</p>
+          </div>
         `,
         type: 'contact'
       });
+
+      // 2. Send User Confirmation (Auto-Reply)
+      if (email) {
+        await sendConfirmationEmail({
+          toEmail: email,
+          userName: name
+        });
+      }
+
     } catch (e) {
-      console.error('Failed to send email notification', e);
+      console.error('Failed to send email operations', e);
     }
 
     return NextResponse.json({ success: true });

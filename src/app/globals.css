@@ -204,7 +204,7 @@ html[dir="rtl"] .swiper-button-next-custom {
   right: auto !important;
 }
 
-/* Custom Scrollbar */
+/* Global Custom Scrollbar */
 ::-webkit-scrollbar {
   width: 10px;
 }
@@ -233,6 +233,25 @@ html[dir="rtl"] .swiper-button-next-custom {
 .dark ::-webkit-scrollbar-thumb:hover {
   background: #9ca3af;
 }
+
+/* Thinner scrollbar for sidebar */
+.scrollbar-thin::-webkit-scrollbar {
+  width: 4px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background-color: #cbd5e1;
+  border-radius: 20px;
+}
+
+.dark .scrollbar-thin::-webkit-scrollbar-thumb {
+  background-color: #4b5563;
+}
+
 
 @layer utilities {
   /* Line clamp utilities with proper prefix support */

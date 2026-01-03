@@ -1,5 +1,46 @@
-import { supabase } from "@/lib/supabase";
-import { Resend } from 'resend';
+import { supabaseAdmin } from "@/lib/supabase";
+import nodemailer from 'nodemailer';
+
+const TRANSPORTER_CONFIG = {
+  host: 'smtp.hostinger.com',
+  port: 465,
+  secure: true,
+  auth: {
+    user: 'support@nuttyscientists.fun',
+    pass: '!Support@20210!'
+  }
+};
+
+const EMAIL_STYLES = `
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: #333;
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: #ffffff;
+  border-radius: 8px;
+  border: 1px solid #eaeaea;
+`;
+
+const HEADER_STYLE = `
+  background: linear-gradient(90deg, #F97316 0%, #06b6d4 100%);
+  color: white;
+  padding: 20px;
+  border-radius: 8px 8px 0 0;
+  margin: -20px -20px 20px -20px;
+  text-align: center;
+`;
+
+const BUTTON_STYLE = `
+  display: inline-block;
+  background-color: #06b6d4;
+  color: white;
+  padding: 12px 24px;
+  text-decoration: none;
+  border-radius: 50px;
+  font-weight: bold;
+  margin-top: 20px;
+`;
 
 export async function sendNotificationEmail({
   subject,
@@ -11,8 +52,7 @@ export async function sendNotificationEmail({
   type: 'contact' | 'review' | 'comment';
 }) {
   try {
-    // 1. Fetch notification settings (emails)
-    const { data: config } = await supabase
+    const { data: config } = await supabaseAdmin
       .from('site_configs')
       .select('value')
       .eq('key', 'settings')
@@ -25,42 +65,90 @@ export async function sendNotificationEmail({
       return;
     }
 
-    const apiKey = process.env.RESEND_API_KEY;
+    const transporter = nodemailer.createTransport(TRANSPORTER_CONFIG);
 
-    // Fallback if no API key
-    if (!apiKey) {
-      console.log('------------------------------------------------');
-      console.log('⚠️ RESEND_API_KEY is missing in .env');
-      console.log('To send real emails, add RESEND_API_KEY=re_... to your .env file.');
-      console.log('------------------------------------------------');
-      console.log(`[Email Notification] Would send to: ${emails.join(', ')}`);
-      console.log(`[Subject]: ${subject}`);
-      console.log(`[Content]: ${html}`);
-      return { success: false, error: 'Missing API Key' };
-    }
+    const improvedHtml = `
+      <div style="${EMAIL_STYLES}">
+        <div style="${HEADER_STYLE}">
+          <h2 style="margin:0;">New Website Activity</h2>
+        </div>
+        <div style="padding: 20px 0;">
+          ${html}
+        </div>
+        <div style="text-align: center; margin-top: 20px; border-top: 1px solid #eee; padding-top: 20px;">
+          <a href="https://nuttyscientists.vercel.app/admin/messages" style="${BUTTON_STYLE}">
+            View Messages Dashboard
+          </a>
+          <p style="font-size: 12px; color: #888; margin-top: 15px;">
+            Nutty Scientists Egypt Admin System
+          </p>
+        </div>
+      </div>
+    `;
 
-    const resend = new Resend(apiKey);
-    
-    // 2. Send Email
-    // Note: On Resend's free tier, you can only send to the email address set up in your account
-    // or you must verify a domain. 'onboarding@resend.dev' works for testing if sending to your own email.
-    
-    const { data, error } = await resend.emails.send({
-      from: 'Nutty Scientists <onboarding@resend.dev>', 
-      to: emails, 
-      subject: subject,
-      html: html
+    console.log(`[Email Notification] Sending to: ${emails.join(', ')}`);
+
+    const info = await transporter.sendMail({
+      from: '"Nutty Scientists Admin" <support@nuttyscientists.fun>',
+      to: emails.join(', '),
+      subject: `🔔 ${subject}`,
+      html: improvedHtml
     });
 
-    if (error) {
-      console.error('Resend Error:', error);
-      return { success: false, error };
-    }
-
-    return { success: true, data };
+    console.log("Notification Sent: %s", info.messageId);
+    return { success: true, data: info };
 
   } catch (error) {
     console.error("Failed to send notification:", error);
+    return { success: false, error };
+  }
+}
+
+export async function sendConfirmationEmail({
+  toEmail,
+  userName,
+}: {
+  toEmail: string;
+  userName: string;
+}) {
+  try {
+    const transporter = nodemailer.createTransport(TRANSPORTER_CONFIG);
+
+    const confirmationHtml = `
+      <div style="${EMAIL_STYLES}">
+        <div style="${HEADER_STYLE}">
+          <h2 style="margin:0;">Message Received!</h2>
+        </div>
+        <div style="padding: 20px;">
+          <p>Dear <strong>${userName}</strong>,</p>
+          <p>Thank you for contacting <strong>Nutty Scientists Egypt</strong>.</p>
+          <p>We have successfully received your message and our team will review it shortly. We typically respond within 24-48 business hours.</p>
+          
+          <div style="background-color: #f9fafb; padding: 15px; border-radius: 8px; margin: 20px 0;">
+            <p style="margin: 0; color: #555;">In the meantime, feel free to explore our <a href="https://nuttyscientists-egypt.com/services" style="color: #06b6d4;">latest programs and workshops</a>.</p>
+          </div>
+
+          <p>Best Regards,<br/><strong>Nutty Scientists Egypt Team</strong></p>
+        </div>
+        <div style="text-align: center; font-size: 12px; color: #999; border-top: 1px solid #eee; padding-top: 15px;">
+          <p>&copy; ${new Date().getFullYear()} Nutty Scientists Egypt. All rights reserved.</p>
+          <p><a href="mailto:support@nuttyscientists.fun" style="color: #999;">support@nuttyscientists.fun</a></p>
+        </div>
+      </div>
+    `;
+
+    const info = await transporter.sendMail({
+      from: '"Nutty Scientists Egypt" <support@nuttyscientists.fun>',
+      to: toEmail,
+      subject: "We received your message - Nutty Scientists Egypt",
+      html: confirmationHtml
+    });
+
+    console.log("Confirmation Email Sent: %s", info.messageId);
+    return { success: true, data: info };
+
+  } catch (error) {
+    console.error("Failed to send confirmation email:", error);
     return { success: false, error };
   }
 }
